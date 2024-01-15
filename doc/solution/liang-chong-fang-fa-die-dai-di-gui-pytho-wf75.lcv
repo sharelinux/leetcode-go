@@ -1,0 +1,248 @@
+## 方法一：迭代
+
+### 前置知识
+
+- [认识链表 & 哨兵技巧【基础算法精讲 06】](https://www.bilibili.com/video/BV1sd4y1x7KN/)
+- [88. 合并两个有序数组](https://leetcode.cn/problems/merge-sorted-array/)
+
+### 思路
+
+创建一个哨兵节点，作为合并后的新链表头节点的前一个节点。这样可以避免单独处理头节点，也无需特判链表为空的情况，从而简化代码。
+
+比较 $\textit{list}_1$ 和 $\textit{list}_2$ 的节点值，如果 $\textit{list}_1$ 的节点值小，则把 $\textit{list}_1$ 加到新链表的末尾，然后把 $\textit{list}_1$ 替换成它的下一个节点。如果 $\textit{list}_2$ 的节点值小则同理。如果两个节点值一样，那么把谁加到新链表的末尾都是一样的，不妨规定把 $\textit{list}_2$ 加到新链表末尾。
+
+重复上述过程，直到其中一个链表为空。
+
+循环结束后，其中一个链表可能还有剩余的节点，将剩余部分加到新链表的末尾。
+
+最后，返回新链表的头节点，即哨兵节点的下一个节点。
+
+* [sol-Python3]
+
+```py
+class Solution:
+    def mergeTwoLists(self, list1: Optional[ListNode], list2: Optional[ListNode]) -> Optional[ListNode]:
+        cur = dummy = ListNode()  # 用哨兵节点简化代码逻辑
+        while list1 and list2:
+            if list1.val < list2.val:
+                cur.next = list1  # 把 list1 加到新链表中
+                list1 = list1.next
+            else:  # 注：相等的情况加哪个节点都是可以的
+                cur.next = list2  # 把 list2 加到新链表中
+                list2 = list2.next
+            cur = cur.next
+        cur.next = list1 if list1 else list2  # 拼接剩余链表
+        return dummy.next
+```
+
+* [sol-Java]
+
+```java
+class Solution {
+    public ListNode mergeTwoLists(ListNode list1, ListNode list2) {
+        ListNode dummy = new ListNode(); // 用哨兵节点简化代码逻辑
+        ListNode cur = dummy; // cur 指向新链表的末尾
+        while (list1 != null && list2 != null) {
+            if (list1.val < list2.val) {
+                cur.next = list1; // 把 list1 加到新链表中
+                list1 = list1.next;
+            } else { // 注：相等的情况加哪个节点都是可以的
+                cur.next = list2; // 把 list2 加到新链表中
+                list2 = list2.next;
+            }
+            cur = cur.next;
+        }
+        cur.next = list1 != null ? list1 : list2; // 拼接剩余链表
+        return dummy.next;
+    }
+}
+```
+
+* [sol-C++]
+
+```cpp
+class Solution {
+public:
+    ListNode *mergeTwoLists(ListNode *list1, ListNode *list2) {
+        auto dummy = new ListNode(); // 用哨兵节点简化代码逻辑
+        auto cur = dummy; // cur 指向新链表的末尾
+        while (list1 && list2) {
+            if (list1->val < list2->val) {
+                cur->next = list1; // 把 list1 加到新链表中
+                list1 = list1->next;
+            } else { // 注：相等的情况加哪个节点都是可以的
+                cur->next = list2; // 把 list2 加到新链表中
+                list2 = list2->next;
+            }
+            cur = cur->next;
+        }
+        cur->next = list1 ? list1 : list2; // 拼接剩余链表
+        return dummy->next;
+    }
+};
+```
+
+* [sol-Go]
+
+```go
+func mergeTwoLists(list1, list2 *ListNode) *ListNode {
+    dummy := &ListNode{} // 用哨兵节点简化代码逻辑
+    cur := dummy // cur 指向新链表的末尾
+    for list1 != nil && list2 != nil {
+        if list1.Val < list2.Val {
+            cur.Next = list1 // 把 list1 加到新链表中
+            list1 = list1.Next
+        } else { // 注：相等的情况加哪个节点都是可以的
+            cur.Next = list2 // 把 list2 加到新链表中
+            list2 = list2.Next
+        }
+        cur = cur.Next
+    }
+    // 拼接剩余链表
+    if list1 != nil {
+        cur.Next = list1
+    } else {
+        cur.Next = list2
+    }
+    return dummy.Next
+}
+```
+
+* [sol-JavaScript]
+
+```js
+var mergeTwoLists = function (list1, list2) {
+    let dummy = new ListNode(); // 用哨兵节点简化代码逻辑
+    let cur = dummy; // cur 指向新链表的末尾
+    while (list1 && list2) {
+        if (list1.val < list2.val) {
+            cur.next = list1; // 把 list1 加到新链表中
+            list1 = list1.next;
+        } else { // 注：相等的情况加哪个节点都是可以的
+            cur.next = list2; // 把 list2 加到新链表中
+            list2 = list2.next;
+        }
+        cur = cur.next;
+    }
+    cur.next = list1 ? list1 : list2; // 拼接剩余链表
+    return dummy.next;
+};
+```
+
+#### 复杂度分析
+
+- 时间复杂度：$\mathcal{O}(n+m)$，其中 $n$ 为 $\textit{list}_1$ 的长度，$m$ 为 $\textit{list}_2$ 的长度。
+- 空间复杂度：$\mathcal{O}(1)$。仅用到若干额外变量。
+
+## 方法二：递归
+
+### 前置知识
+
+[如何理解递归？计算机是怎么执行递归的？【基础算法精讲 09】](https://www.bilibili.com/video/BV1UD4y1Y769/)
+
+### 思路
+
+直接用 `mergeTwoLists` 当作递归函数：
+
+- 递归边界：如果其中一个链表为空，直接返回另一个链表作为合并后的结果。
+- 如果两个链表都不为空，则比较两个链表当前节点的值，并选择较小的节点作为新链表的当前节点。例如 $\textit{list}_1$ 的节点值更小，那么递归调用 `mergeTwoLists(list1.next, list2)`，将递归返回的链表接在 $\textit{list}_1$ 的末尾。
+
+* [sol-Python3]
+
+```py
+class Solution:
+    def mergeTwoLists(self, list1: Optional[ListNode], list2: Optional[ListNode]) -> Optional[ListNode]:
+        if list1 is None: return list2  # 注：如果都为空则返回空
+        if list2 is None: return list1
+        if list1.val < list2.val:
+            list1.next = self.mergeTwoLists(list1.next, list2)
+            return list1
+        list2.next = self.mergeTwoLists(list1, list2.next)
+        return list2
+```
+
+* [sol-Java]
+
+```java
+class Solution {
+    public ListNode mergeTwoLists(ListNode list1, ListNode list2) {
+        if (list1 == null) return list2; // 注：如果都为空则返回空
+        if (list2 == null) return list1;
+        if (list1.val < list2.val) {
+            list1.next = mergeTwoLists(list1.next, list2);
+            return list1;
+        }
+        list2.next = mergeTwoLists(list1, list2.next);
+        return list2;
+    }
+}
+```
+
+* [sol-C++]
+
+```cpp
+class Solution {
+public:
+    ListNode *mergeTwoLists(ListNode *list1, ListNode *list2) {
+        if (list1 == nullptr) return list2; // 注：如果都为空则返回空
+        if (list2 == nullptr) return list1;
+        if (list1->val < list2->val) {
+            list1->next = mergeTwoLists(list1->next, list2);
+            return list1;
+        }
+        list2->next = mergeTwoLists(list1, list2->next);
+        return list2;
+    }
+};
+```
+
+* [sol-Go]
+
+```go
+func mergeTwoLists(list1, list2 *ListNode) *ListNode {
+    if list1 == nil {
+        return list2 // 注：如果都为空则返回空
+    }
+    if list2 == nil {
+        return list1
+    }
+    if list1.Val < list2.Val {
+        list1.Next = mergeTwoLists(list1.Next, list2)
+        return list1
+    }
+    list2.Next = mergeTwoLists(list1, list2.Next)
+    return list2
+}
+```
+
+* [sol-JavaScript]
+
+```js
+var mergeTwoLists = function (list1, list2) {
+    if (list1 === null) return list2; // 注：如果都为空则返回空
+    if (list2 === null) return list1;
+    if (list1.val < list2.val) {
+        list1.next = mergeTwoLists(list1.next, list2);
+        return list1;
+    }
+    list2.next = mergeTwoLists(list1, list2.next);
+    return list2;
+};
+```
+
+#### 复杂度分析
+
+- 时间复杂度：$\mathcal{O}(n+m)$，其中 $n$ 为 $\textit{list}_1$ 的长度，$m$ 为 $\textit{list}_2$ 的长度。
+- 空间复杂度：$\mathcal{O}(n+m)$。递归需要 $\mathcal{O}(n+m)$ 的栈空间。
+
+## 思考题
+
+如果只保留两个链表中的相同元素（求交集），要怎么做？
+
+欢迎在评论区发表你的思路。
+
+---
+
+[往期每日一题题解（按 tag 分类）](https://github.com/EndlessCheng/codeforces-go/blob/master/leetcode/SOLUTIONS.md)
+
+欢迎关注 [B站@灵茶山艾府](https://space.bilibili.com/206214)
