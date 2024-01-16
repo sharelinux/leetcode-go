@@ -1,0 +1,48 @@
+### 解题思路
+
+维护一个根节点list，一个子节点list
+从根节点list按队列顺序取值，将有效的子节点添加到子节点list
+当根节点没数据了，将子节点list赋值给根节点list，子节点清空
+
+### 代码
+
+* python3
+
+```python
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, val=0, left=None, right=None):
+#         self.val = val
+#         self.left = left
+#         self.right = right
+class Solution:
+    def levelOrder(self, root: TreeNode) -> List[List[int]]:
+        if not root:
+            return []
+
+        root_list = [root]
+        child_list = []
+
+        res = []
+        sub_res = []
+
+        while root_list:
+            root = root_list.pop(0)
+            sub_res.append(root.val)
+
+            if root.left:
+                child_list.append(root.left)
+            
+            if root.right:
+                child_list.append(root.right)
+
+            
+            if not root_list:
+                res.append(sub_res)
+                root_list = child_list
+                child_list = []
+                sub_res = []
+            
+        return res
+```
+

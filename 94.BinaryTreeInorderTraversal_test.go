@@ -76,6 +76,8 @@ func inorderTraversal(root *TreeNode) []int {
 		if node == nil {
 			return
 		}
+
+		//中序遍历: 左 根 右
 		inorder(node.Left)
 		res = append(res, node.Val)
 		inorder(node.Right)

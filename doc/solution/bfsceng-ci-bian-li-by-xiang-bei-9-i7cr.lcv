@@ -1,0 +1,42 @@
+> Problem: [102. 二叉树的层序遍历](https://leetcode.cn/problems/binary-tree-level-order-traversal/description/)
+
+[TOC]
+
+# 思路
+
+> 将每一个节点包含其对应所在的层次记录到队列中，为了方便将根节点所在的层次设置为0，然后层次遍历，将节点的值存入答案中。
+
+# Code
+
+* []
+
+```C++
+class Solution {
+public:
+    vector<vector<int>> levelOrder(TreeNode* root) {
+      queue<pair<TreeNode*, int>> q;
+      vector<vector<int>> ans;
+      if(root == nullptr)
+        return {};
+      q.push(make_pair(root, 0));
+      while(!q.empty())
+      {
+        auto [node, depth] = q.front();
+        ans.resize(depth + 1);
+        q.pop();
+        ans[depth].emplace_back(node->val);
+        if(node->left != nullptr)
+        {
+          q.push(make_pair(node->left, depth + 1));
+        }
+        if(node->right != nullptr)
+        {
+          q.push(make_pair(node->right, depth + 1));
+        }
+      }
+      return ans;
+      
+    }
+};
+```
+
